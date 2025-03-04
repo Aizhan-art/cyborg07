@@ -1,9 +1,11 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 
 
 from .forms import UserRegisterForms
+from .models import MyUser
 
 
 def user_register_view(request):
@@ -40,3 +42,7 @@ def user_logout_view(request):
     logout(request)
     messages.success(request,'Вы успешно вышли из системы')
     return redirect('index')
+
+def profile_view(request):
+    user = get_object_or_404(MyUser, id=request.user.id)
+    return render(request, 'account/profile.html', {'user': user})
