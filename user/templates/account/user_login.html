@@ -1,0 +1,77 @@
+{% load static %}
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <title>Вход | Cyborg Gaming</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+
+    <!-- Additional CSS Files -->
+    <link rel="stylesheet" href="{% static 'assets/css/fontawesome.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/templatemo-cyborg-gaming.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/owl.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/animate.css' %}">
+</head>
+
+<body>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-6">
+                       {% if messages %}
+                  <div class="container mt-4">
+                      {% for message in messages %}
+                        <div class="alert
+                          {% if massage.tags == 'error' %}
+                            alert-danger
+                          {% elif message.tags == 'success' %}
+                            alert-success
+                          {% elif message.tags == 'warning' %}
+                            alert-warning
+                          {% else %}
+                            alert-info
+                          {% endif %}
+                          alert-dismissible fade show" role="alert"
+                        >
+                         {{ message }}
+                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                       </div>
+                      {% endfor%}
+                  </div>
+                {% endif%}
+
+                <div class="heading-section text-center">
+                    <h4>Войти</h4>
+                </div>
+
+                <div class="login-form bg-dark-transparent p-4 rounded">
+                    <form action="." method="post">
+                        {% csrf_token %}
+
+                        <div class="mb-3">
+                            <label for="email" class="form-label text-white">Email</label>
+                            <input type="email" id="email" name="email" class="form-control" placeholder="Введите ваш email" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="password" class="form-label text-white">Пароль</label>
+                            <input type="password" id="password" name="password" class="form-control" placeholder="Введите ваш пароль" required>
+                        </div>
+
+                        <div class="text-center">
+                            <button type="submit" class="main-border-button">Войти</button>
+                        </div>
+                    </form>
+                    <div class="text-center mt-3">
+                        <span>Нет аккаунта?</span>
+                        <a href="register.html" class="text-decoration-underline">Зарегистрироваться</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

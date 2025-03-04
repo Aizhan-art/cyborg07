@@ -10,4 +10,10 @@ def index_view(request):
 
 def product_detail_view(request, product_id):
     product = get_object_or_404(Product,id=product_id)
-    return render(request, 'main/product_detail.html', {'product': product})
+
+    similar_products = Product.objects.filter(category=product.category).exclude(id=product.id)
+
+    return render(
+        request=request,
+        template_name='main/product_detail.html',
+        context={'product': product, 'similar_products': similar_products})
