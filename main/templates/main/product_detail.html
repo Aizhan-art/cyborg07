@@ -37,7 +37,9 @@
           <div class="row">
             <div class="col-lg-8">
               <div class="heading-section">
-                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#cyborgModal">Изменить</button>
+                {% if request.user == product.user %}
+                  <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#cyborgModal">Изменить</button>
+                {% endif %}
               </div>
 
               <div class="featured-games header-text">
