@@ -31,7 +31,6 @@ class Image(models.Model):
         verbose_name_plural = 'Изображения продуктов'
 
 
-    # TODO: Сделать связь на таблицу User
 class Product(models.Model):
     user = models.ForeignKey(
         User,
@@ -75,7 +74,7 @@ class Product(models.Model):
         verbose_name = 'Продукт'
         verbose_name_plural = 'Продукты'
 
- # TODO: Сделать связь на таблицу User
+
 class Rating(models.Model):
     user = models.ForeignKey(
          User,
@@ -99,9 +98,8 @@ class Rating(models.Model):
         verbose_name='Дата создания'
     )
 
-
-    #  def __str__(self):
-    #         return self.title
+    def __str__(self):
+        return f'{self.user} -->{self.product}'
 
 
     class Meta:
@@ -109,7 +107,6 @@ class Rating(models.Model):
          verbose_name_plural = 'Отзывы'
 
 
- # TODO: Сделать связь на таблицу User
 class RatingAnswer(models.Model):
     user = models.ForeignKey(
         User,
@@ -118,7 +115,8 @@ class RatingAnswer(models.Model):
     rating = models.ForeignKey(
         Rating,
         on_delete=models.CASCADE,
-        verbose_name='Отзыв'
+        verbose_name='Отзыв',
+        related_name='rating_answers'
     )
     comment = models.TextField(
         max_length=500,
@@ -138,13 +136,14 @@ class RatingAnswer(models.Model):
         verbose_name='Ограничение по времени'
     )
 
-
+    def __str__(self):
+        return f'{self.user} -->{self.rating}'
     class Meta:
          verbose_name = 'Ответ на отзыв'
          verbose_name_plural = 'Ответы на отзывы'
 
 
- # TODO: Сделать связь на таблицу User
+
 class Order(models.Model):
     user = models.ForeignKey(
         User,

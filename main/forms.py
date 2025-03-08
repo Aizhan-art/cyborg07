@@ -27,3 +27,5 @@ class ProductUpdateForm(forms.ModelForm):
             'price',
             'is_active',
         )
+
+
