@@ -1,6 +1,8 @@
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.core.validators import MaxLengthValidator, MinValueValidator
+from .choices import OrderStatusEnum
+
 User = get_user_model()
 
 class Category(models.Model):
@@ -147,16 +149,23 @@ class RatingAnswer(models.Model):
 class Order(models.Model):
     user = models.ForeignKey(
         User,
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
+        related_name='orders',
+        verbose_name='Пользователь'
     )
     product = models.ForeignKey(
         Product,
         on_delete=models.CASCADE,
-        verbose_name='Продукт'
+        verbose_name='Продукт',
+        related_name='orders'
     )
     created_date = models.DateTimeField(
         auto_now_add=True,
         verbose_name='Дата создания'
+    )
+    update_date = models.DateTimeField(
+        auto_now=True,
+        verbose_name='Дата изменения'
     )
     is_paid = models.BooleanField(
         default=False,
@@ -166,9 +175,48 @@ class Order(models.Model):
         default=1,
         verbose_name='Количество'
     )
+    check_image = models.ImageField(
+        upload_to='media/check',
+        verbose_name='Чек'
+    )
+    status = models.CharField(
+        choices=OrderStatusEnum.choices,
+        default=OrderStatusEnum.IN_PROCESSING,
+        verbose_name='Статус оплаты',
+        max_length=15
+    )
 
-    #def __str__(self):
-        #return
+    def __str__(self):
+        return f'{self.user}-->{self.product}'
+
     class Meta:
-        verbose_name = 'Заказ'
-        verbose_name_plural = 'Закавы'
+        verbose_name = 'Заявка на оплату'
+        verbose_name_plural = 'Заявки на оплаты'
+
+
+class PaymentMethod(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='payment_methods',
+        verbose_name='Пользователь'
+    )
+    title = models.CharField(
+        max_length=150,
+        verbose_name='Название'
+    )
+    qr_image = models.ImageField(
+        upload_to='media/qr',
+        verbose_name=' QR'
+    )
+    create_date = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name='Дата создания'
+    )
+
+    def __str__(self):
+        return f'{self.user}-->{self.title}'
+
+    class Meta:
+        verbose_name = 'Способ оплаты'
+        verbose_name_plural = 'Способы оплаты'

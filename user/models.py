@@ -75,6 +75,10 @@ class MyUser(AbstractBaseUser):
     is_admin = models.BooleanField(
         default=False
     )
+    is_2fa_enabled = models.BooleanField(
+        default=False,
+        verbose_name="Включить 2FA"
+    )
 
     objects = MyUserManager()
 
@@ -104,3 +108,12 @@ class MyUser(AbstractBaseUser):
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
 
+
+class OTP(models.Model):
+    user = models.ForeignKey(MyUser, on_delete=models.CASCADE)
+    code = models.CharField(max_length=6)
+    if_used = models.BooleanField(default=False)
+    created_date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.user
