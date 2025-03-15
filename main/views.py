@@ -1,9 +1,11 @@
 from django.shortcuts import render, get_object_or_404, redirect, Http404
 from django.contrib import messages
 from django.db.models import Avg
+from django.core.paginator import Paginator
 
 from .forms import ProductCreateForm, ProductUpdateForm
-from .models import Product, Rating, RatingAnswer, PaymentMethod, Order
+from .filters import ProductListFilter
+from .models import Product, Rating, RatingAnswer, PaymentMethod, Order, Category
 
 
 def index_view(request):
@@ -118,8 +120,7 @@ def product_payment_create_view(request, product_id, product_quantity):
     if product_quantity < 1:
         messages.error(request, 'Укажите количество!')
         return redirect('product_detail', product.id)
-    # blprmltpgewppssj
-    # ai2han @ ya.ru
+
     if request.method == 'POST':
         check =request.FILES.get('check', '')
         order = Order(
@@ -132,9 +133,29 @@ def product_payment_create_view(request, product_id, product_quantity):
         messages.success(request, 'Заявка на оплату отправлено продавцу')
         return redirect('index')
 
-
     return render(
         request=request,
         template_name='main/product_payment.html',
         context={'seller_payment_methods': seller_payment_methods}
+    )
+
+def product_list_view(request):
+    queryset = Product.objects.filter(is_active=True)
+
+    if 'product_search' in request.GET:
+        product_name = request.GET.get('product_search')
+        queryset = queryset.filter(title_icontains=product_name)
+
+    products = ProductListFilter(request.GET, queryset=queryset)
+
+    sorted_queryset = products.qs.order_by('id')
+
+    paginator = Paginator(sorted_queryset, 2)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
+    return render(
+        request=request,
+        template_name='main/product_list.html',
+        context={'page_obj': page_obj}
     )
