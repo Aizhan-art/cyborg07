@@ -143,26 +143,34 @@
     <div class="row">
       <div class="col-lg-12">
         <div class="page-content">
-           {% if messages %}
-            <div class="container mt-4">
-              {% for message in messages %}
-                <div class="alert
-                  {% if message.tags == 'error' %}
-                    alert-danger
-                  {% elif message.tags == 'success' %}
-                    alert-success
-                  {% elif message.tags == 'warning' %}
-                    alert-warning
-                  {% else %}
-                    alert-info
-                  {% endif %}
-                  alert-dismissible fade show" role="alert"
-                >
-                  {{ message }}
-                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-              {% endfor %}
-            </div>
+          {% if messages %}
+          <div id="messages">
+            {% for message in messages %}
+              <div class="alert
+                        {% if message.tags == 'error' %}
+                          alert-danger
+                        {% elif message.tags == 'success' %}
+                          alert-success
+                        {% elif message.tags == 'warning' %}
+                          alert-warning
+                        {% else %}
+                          alert-info
+                        {% endif %}
+                        alert-dismissible fade show" role="alert"
+                      >
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+            {% endfor %}
+          </div>
+          <script>
+           setTimeout(function() {
+             let messages = document.getElementById('messages');
+             if (messages) {
+               messages.style.display = 'none';
+             }
+           }, 3000); // Исчезает через 3 секунды
+          </script>
           {% endif %}
 
           <!-- ***** Featured Games Start ***** -->
@@ -249,32 +257,9 @@
           </div>
           <!-- ***** Featured Games End ***** -->
           <!-- Под каруселью изображений или там, где нужно вывести блок с количеством -->
+           <a href="{% url 'product_payment_create' product.id %}" class="btn btn-primary">Купить</a>
           <div class="quantity-container">
-            <form id="paymentForm"
-                  method="GET"
-                  action="{% url 'product_payment_create' product.id 1 %}"
-                    onsubmit="
-                      const qty = document.getElementById('quantity').value;
-                      alert('Количество: ' + qty);
-                      this.action = this.action.replace('/1/', '/' + qty + '/');
-                    "
-                    >
 
-              <label for="quantity" style="color: #fff;">Количество:</label>
-              <div class="quantity-controls">
-                <button type="button" class="quantity-btn minus-btn">−</button>
-                <input
-                  type="number"
-                  id="quantity"
-                  name="quantity"
-                  min="1"
-                  value="1"
-                  style="width: 50px; text-align: center;"
-                >
-                <button type="button" class="quantity-btn plus-btn">+</button>
-              </div>
-              <button class="btn btn-primary" style="margin-left: 10px;" type="submit">В корзину</button>
-            </form>
 
           </div>
 
@@ -405,7 +390,7 @@
                         {% if similar_product.user.avatar %}
                           <img src="{{ similar_product.user.avatar.url }}" alt="" style="max-width: 46px; border-radius: 50%; float: left;">
                         {% else %}
-                          <img src="{% static 'assets/images/avatar-01.jpg' %}" alt="" style="max-width: 46px; border-radius: 50%; float: left;">
+                          <img src="{{product.main_image.url}}" alt="" style="max-width: 46px; border-radius: 50%; float: left;">
                         {% endif %}
                       </div>
                       <span><i class="fa fa-check"></i> {{ similar_product.user.first_name }}</span>
@@ -429,60 +414,46 @@
   </div>
 
 <script>
-  document.addEventListener("DOMContentLoaded", function () {
+ document.addEventListener("DOMContentLoaded", function () {
     // Находим все кнопки, у которых id начинается с "myBtn"
     const replyButtons = document.querySelectorAll("[id^='myBtn']");
 
     replyButtons.forEach(button => {
-      button.addEventListener("click", function() {
-        // Заменяем 'myBtn' на 'myModal' в ID, чтобы получить ID соответствующей модалки
-        const modalId = button.id.replace('myBtn', 'myModal');
-        const modal = document.getElementById(modalId);
-        if (modal) {
-          modal.style.display = 'block';
-        }
-      });
+        button.addEventListener("click", function () {
+            // Заменяем 'myBtn' на 'myModal' в ID, чтобы получить ID соответствующей модалки
+            const modalId = button.id.replace('myBtn', 'myModal');
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.style.display = 'block';
+            }
+        });
     });
 
     // Находим все элементы с классом close
     const closeElements = document.querySelectorAll(".close");
 
     closeElements.forEach(closeEl => {
-      closeEl.addEventListener("click", function() {
-        // Берём ID модалки из data-атрибута
-        const modalId = closeEl.getAttribute("data-modal-id");
-        const modal = document.getElementById(modalId);
-        if (modal) {
-          modal.style.display = 'none';
-        }
-      });
+        closeEl.addEventListener("click", function () {
+            // Берём ID модалки из data-атрибута
+            const modalId = closeEl.getAttribute("data-modal-id");
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.style.display = 'none';
+            }
+        });
     });
 
     // Закрываем модалку по клику вне её области
-    window.addEventListener("click", function(event) {
-      const allModals = document.querySelectorAll(".modal");
-      allModals.forEach(m => {
-        if (event.target === m) {
-          m.style.display = "none";
-        }
-      });
+    window.addEventListener("click", function (event) {
+        const allModals = document.querySelectorAll(".modal");
+        allModals.forEach(m => {
+            if (event.target === m) {
+                m.style.display = "none";
+            }
+        });
     });
-  });
-  const minusBtn = document.querySelector('.minus-btn');
-  const plusBtn = document.querySelector('.plus-btn');
-  const quantityInput = document.querySelector('#quantity');
+});
 
-  minusBtn.addEventListener('click', function() {
-    let currentValue = parseInt(quantityInput.value) || 1;
-    if (currentValue > 1) {
-      quantityInput.value = currentValue - 1;
-    }
-  });
-
-  plusBtn.addEventListener('click', function() {
-    let currentValue = parseInt(quantityInput.value) || 1;
-    quantityInput.value = currentValue + 1;
-  });
 
 </script>
 

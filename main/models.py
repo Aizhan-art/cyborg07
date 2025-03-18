@@ -145,8 +145,7 @@ class RatingAnswer(models.Model):
          verbose_name_plural = 'Ответы на отзывы'
 
 
-
-class Order(models.Model):
+class PaymentRequest(models.Model):
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -178,6 +177,9 @@ class Order(models.Model):
     check_image = models.ImageField(
         upload_to='media/check',
         verbose_name='Чек'
+    )
+    total_price = models.PositiveIntegerField(
+        verbose_name='Сумма'
     )
     status = models.CharField(
         choices=OrderStatusEnum.choices,
@@ -220,3 +222,28 @@ class PaymentMethod(models.Model):
     class Meta:
         verbose_name = 'Способ оплаты'
         verbose_name_plural = 'Способы оплаты'
+
+class Payment(models.Model):
+    user = models.CharField(
+        max_length=225,
+        verbose_name='Покупатель'
+    )
+    product = models.CharField(
+        max_length=225,
+        verbose_name='Продукт'
+    )
+    quantity = models.PositiveSmallIntegerField(
+        verbose_name='Количество'
+    )
+    check_image = models.ImageField(
+        verbose_name='Чек',
+        upload_to='media/check'
+    )
+    total_price = models.PositiveIntegerField(
+        verbose_name='Сумма'
+    )
+
+
+    class Meta:
+        verbose_name = 'Оплата'
+        verbose_name_plural = 'Оплаты'

@@ -20,7 +20,7 @@
     <link rel="stylesheet" href="{% static 'assets/css/templatemo-cyborg-gaming.css' %}">
     <link rel="stylesheet" href="{% static 'assets/css/owl.css' %}">
     <link rel="stylesheet" href="{% static 'assets/css/animate.css' %}">
-    <link rel="stylesheet" href="https://unpkg.com/swiper@7/swiper-bundle.min.css"/>
+<!--    <link rel="stylesheet" href="https://unpkg.com/swiper@7/swiper-bundle.min.css"/>-->    <link rel="stylesheet" href="https://unpkg.com/swiper@7/swiper-bundle.min.css"/>-->
 <!--
 
 TemplateMo 579 Cyborg Gaming
@@ -79,7 +79,9 @@ https://templatemo.com/tm-579-cyborg-gaming
                     <ul class="nav">
                         <li><a href="{% url 'index' %}" class="active">Главная </a></li>
                         <li><a href="{% url 'catalog' %}">Все товары</a></li>
-                        <li><a href="detail.html">Детали</a></li>
+                        {% if product %}
+                          <li><a href="{% url 'product_detail' product.id %}">Детали</a></li>
+                        {% endif %}
                         {% if not request.user.is_authenticated %}
                            <li><a href="{% url 'login' %}">Войти</a></li>
                            <li><a href="{% url 'register' %}">Зарегистрироваться</a></li>

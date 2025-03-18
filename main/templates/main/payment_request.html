@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="page-content">
+          <!-- ***** Gaming Library Start ***** -->
+          <div class="gaming-library profile-library">
+            <div class="col-lg-12">
+              <div class="heading-section">
+                <h4><em>Your Gaming</em> Library</h4>
+              </div>
+
+              {% for payment_request in payment_requests %}
+                <div class="item d-flex align-items-center justify-content-between p-3 border rounded bg-dark">
+                  <div class="d-flex align-items-center">
+                    <img src="{{ payment_request.check_image.url }}" alt="Чек" class="rounded-circle me-3" style="width: 50px; height: 50px; object-fit: cover;">
+                    <div>
+                      <h6 class="mb-0 text-light">Покупатель: <span class="text-muted">{{ payment_request.user.first_name }}</span></h6>
+                      <small class="text-muted">Дата: {{ payment_request.created_date|date:"d/m/Y H:i" }}</small>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h6 class="mb-0 text-light">Продукт: <span class="text-muted">{{ payment_request.product }}</span></h6>
+                    <h6 class="mb-0 text-light">Количество: <span class="text-muted">{{ payment_request.quantity }}</span></h6>
+                    <h6 class="mb-0 text-light">Сумма: <span class="text-muted">{{ payment_request.total_price }}</span></h6>
+                  </div>
+
+                  <div>
+                    <h6 class="mb-0 text-light">Статус: <span class="text-muted">{{ payment_request.get_status_display }}</span></h6>
+                    <form method="post" action="{% url 'payment_request_update_status' payment_request.id %}">
+                      {% csrf_token %}
+                      <select class="form-select form-select-sm mt-1" name="status" onchange="this.form.submit()">
+                        <option selected>Изменить статус</option>
+                        <option value="in_processing">В обработке</option>
+                        <option value="denied">Отклонено</option>
+                        <option value="accepted">Принято</option>
+                      </select>
+                    </form>
+                  </div>
+
+                  <div>
+                    <a class="btn btn-primary btn-sm" download="{{ payment_request.check_image.url }}" href="{{ payment_request.check_image.url }}">
+                      Скачать чек
+                    </a>
+                  </div>
+                </div>
+              {% endfor %}
+
+              <div class="col-lg-12 mt-3">
+                <div class="main-button">
+                  <a href="{% url 'user_profile' %}">Назад</a>
+                </div>
+              </div>
+
+            </div>
+          </div>
+          <!-- ***** Gaming Library End ***** -->
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

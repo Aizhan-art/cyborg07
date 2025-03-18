@@ -63,7 +63,9 @@ class UserAdmin(BaseUserAdmin):
             'first_name',
             'last_name',
             'phone_number',
-            'role')}),
+            'role',
+            'is_otp'
+        )}),
         ('Permissions', {'fields': ('is_admin', )}),
     )
     # add_fieldsets is not a standard ModelAdmin attribute. UserAdmin

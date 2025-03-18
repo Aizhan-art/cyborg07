@@ -75,9 +75,9 @@ class MyUser(AbstractBaseUser):
     is_admin = models.BooleanField(
         default=False
     )
-    is_2fa_enabled = models.BooleanField(
+    is_otp = models.BooleanField(
         default=False,
-        verbose_name="Включить 2FA"
+        verbose_name='Включить'
     )
 
     objects = MyUserManager()

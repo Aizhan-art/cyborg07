@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from django.shortcuts import render, get_object_or_404, redirect, Http404
 from django.contrib import messages
 from django.db.models import Avg
@@ -5,7 +7,7 @@ from django.core.paginator import Paginator
 
 from .forms import ProductCreateForm, ProductUpdateForm
 from .filters import ProductListFilter
-from .models import Product, Rating, RatingAnswer, PaymentMethod, Order, Category
+from .models import Product, Rating, RatingAnswer, PaymentMethod, PaymentRequest, Category, Payment
 
 
 def index_view(request):
@@ -107,27 +109,37 @@ def rating_answer_create_view(request, rating_id):
         return redirect('product_detail', rating.product_id)
 
 def user_profile_view(request):
+    payment_requests = PaymentRequest.objects.filter(product__user=request.user).order_by('-id')[:3]
+
     return render(
         request=request,
-        template_name='main/user_profile.html'
+        template_name='main/user_profile.html',
+        context={'payment_requests': payment_requests}
     )
 
-
-def product_payment_create_view(request, product_id, product_quantity):
+def product_payment_create_view(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     seller_payment_methods = PaymentMethod.objects.filter(user=product.user)
 
-    if product_quantity < 1:
-        messages.error(request, 'Укажите количество!')
-        return redirect('product_detail', product.id)
-
     if request.method == 'POST':
         check =request.FILES.get('check', '')
-        order = Order(
+        quantity = request.POST.get('quantity', '1')
+
+        try:
+            quantity = Decimal(quantity)
+        except:
+            messages.error(request, 'Неверное количество')
+            return redirect('index')
+
+        price = product.price if product.price is not None else Decimal('0.00')
+        total_price = quantity * price
+
+        order = PaymentRequest(
             user=request.user,
             product=product,
-            quantity=product_quantity,
-            check_image=check
+            quantity=quantity,
+            check_image=check,
+            total_price=total_price
         )
         order.save()
         messages.success(request, 'Заявка на оплату отправлено продавцу')
@@ -144,7 +156,7 @@ def product_list_view(request):
 
     if 'product_search' in request.GET:
         product_name = request.GET.get('product_search')
-        queryset = queryset.filter(title_icontains=product_name)
+        queryset = queryset.filter(title__icontains=product_name)
 
     products = ProductListFilter(request.GET, queryset=queryset)
 
@@ -159,3 +171,34 @@ def product_list_view(request):
         template_name='main/product_list.html',
         context={'page_obj': page_obj}
     )
+
+def payment_request_list_view(request):
+    payment_requests = PaymentRequest.objects.filter(product__user=request.user).order_by('-id')
+
+    return render(
+        request=request,
+        template_name='main/payment_request.html',
+        context={'payment_requests': payment_requests}
+    )
+
+def payment_request_update_status(request, payment_request_id):
+    payment_request = get_object_or_404(PaymentRequest, id=payment_request_id)
+
+    if request.method == 'POST':
+        status = request.POST.get('status')
+        payment_request.status = status
+        payment_request.save()
+
+        if payment_request.status == 'accepted':
+            payment = Payment(
+                user=payment_request.user.first_name,
+                product=payment_request.product.title,
+                quantity=payment_request.quantity,
+                check_image=payment_request.check_image,
+                total_price=payment_request.total_price
+            )
+            payment.save()
+
+        messages.success(request, 'Успешно изменено')
+
+    return redirect('payment_requests')

@@ -85,23 +85,31 @@
 
   <!-- Пример карточек способов оплаты -->
   <div class="row">
-    {% for payment_methods in seller_payment_methods %}
-      <div class="col-lg-3 col-md-4 col-sm-6">
-        <div class="payment-method-card">
-          <!-- Поменяйте путь на свой: {% static 'images/payment/visa.png' %} или иной -->
-          <img src="{{ payment_methods.qr_image.url }}" alt="Visa">
-          <p>{{ payment_methods.title }}</p>
-        </div>
-      </div>
-    {% endfor %}
+       {% for payment_method in request.user.payment_methods.all %}
+         <div class="col-lg-3 col-sm-6">
+           <div class="item">
+             <div class="thumb">
+               <img src="{{ payment_method.qr_image.url }}" alt="" style="border-radius: 23px;">
+             </div>
+             <div class="down-content">
+               <h4>{{ payment_method.title }}</h4>
+               <span><i class="fa fa-eye"></i> 250</span>
+             </div>
+           </div>
+         </div>
+       {% endfor %}
     <!-- Добавляйте остальные способы оплаты по аналогии -->
   </div>
-
   <!-- Инпут для чека -->
   <div class="row" style="margin-top: 40px;">
     <div class="col-lg-12 text-center">
       <form method="post" action="?quantity={{ quantity }}" enctype="multipart/form-data">
         {% csrf_token %}
+         <div style="display: flex; align-items: center; gap: 10px;">
+  <label for="quantityInput">Количество:</label>
+  <input type="number" name="quantity" id="quantityInput" min="1" value="1" style="width: 50px; text-align: center;">
+</div>
+
         <label for="checkInput" style="display: block; margin-bottom: 10px;">
           Прикрепите чек
         </label>
@@ -116,8 +124,14 @@
         <button type="submit" class="btn btn-primary pay-button">
           Оплатить
         </button>
+        <div class="col-lg-12 mt-3">
+          <div class="main-button">
+            <a href="{% url 'index' %}">Назад</a>
+          </div>
+        </div>
       </form>
     </div>
   </div>
 </div>
+
 {% endblock %}

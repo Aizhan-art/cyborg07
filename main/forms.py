@@ -12,7 +12,6 @@ class ProductCreateForm(forms.ModelForm):
             'images',
             'description',
             'price',
-            'is_active',
         )
 
 class ProductUpdateForm(forms.ModelForm):
@@ -25,7 +24,6 @@ class ProductUpdateForm(forms.ModelForm):
             'images',
             'description',
             'price',
-            'is_active',
         )
 
 

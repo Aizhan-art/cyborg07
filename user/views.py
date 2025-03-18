@@ -36,7 +36,7 @@ def user_login_view(request):
         user = authenticate(request, username=user_email, password=user_password)
 
         if user:
-            if user.is_2fa_enabled:
+            if user.is_otp:
 
                 code = generate_otp_code()
                 OTP.objects.create(user=user, code=code)
